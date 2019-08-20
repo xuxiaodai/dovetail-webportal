@@ -23,6 +23,7 @@ from opnfv_testapi.tornado_swagger import swagger
 from opnfv_testapi.ui.auth import constants as auth_const
 from opnfv_testapi.db import api as dbapi
 
+DOVETAIL_RESULTS_PATH = '/home/testapi/logs/{}/results/results.json'
 DOVETAIL_LOG_PATH = '/home/testapi/logs/{}/results/dovetail.log'
 
 
@@ -155,18 +156,32 @@ class TestsGURHandler(GenericTestHandler):
 
     @gen.coroutine
     def _check_api_response_validation(self, test_id):
+        results_path = DOVETAIL_RESULTS_PATH.format(test_id)
         log_path = DOVETAIL_LOG_PATH.format(test_id)
-        if not os.path.exists(log_path):
-            raises.Forbidden('dovetail.log not found, please check')
-
-        with open(log_path) as f:
-            log_content = f.read()
-
-        warning_keyword = 'Strict API response validation DISABLED'
-        if warning_keyword in log_content:
-            raise gen.Return('API response validation disabled')
+        # For release after 2018.09
+        # Dovetail adds 'validation' directly into results.json
+        if os.path.exists(results_path):
+            with open(results_path) as f:
+                try:
+                    data = json.loads(jsonfile):
+                    if data['validation'] == 'enabled':
+                        raise gen.Return('API response validation enabled')
+                    else:
+                        raise gen.Return('API response validation disabled')
+                except:
+                    pass
+        # For 2018.01 and 2018.09
+        # Need to check dovetail.log for this info
+        else if os.path.exists(log_path):
+            with open(log_path) as f:
+                log_content = f.read()
+                warning_keyword = 'Strict API response validation DISABLED'
+                if warning_keyword in log_content:
+                    raise gen.Return('API response validation disabled')
+                else:
+                    raise gen.Return('API response validation enabled')
         else:
-            raise gen.Return('API response validation enabled')
+            raises.Forbidden('neither results.json nor dovetail.log are found')
 
     @swagger.operation(nickname="deleteTestById")
     @gen.coroutine
