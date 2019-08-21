@@ -163,7 +163,7 @@ class TestsGURHandler(GenericTestHandler):
         if os.path.exists(results_path):
             with open(results_path) as f:
                 try:
-                    data = json.loads(jsonfile):
+                    data = json.loads(jsonfile)
                     if data['validation'] == 'enabled':
                         raise gen.Return('API response validation enabled')
                     else:
