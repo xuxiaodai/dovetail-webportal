@@ -172,7 +172,7 @@ class TestsGURHandler(GenericTestHandler):
                     pass
         # For 2018.01 and 2018.09
         # Need to check dovetail.log for this info
-        else if os.path.exists(log_path):
+        elif os.path.exists(log_path):
             with open(log_path) as f:
                 log_content = f.read()
                 warning_keyword = 'Strict API response validation DISABLED'
