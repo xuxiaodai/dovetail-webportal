@@ -174,7 +174,7 @@ class TestsGURHandler(GenericTestHandler):
                 except:
                     pass
         if res:
-            gen.Return(res)
+            raise gen.Return(res)
 
         # For 2018.01 and 2018.09
         # Need to check dovetail.log for this info
