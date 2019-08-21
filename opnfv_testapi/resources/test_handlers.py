@@ -148,9 +148,10 @@ class TestsGURHandler(GenericTestHandler):
         if not data:
             raises.NotFound(message.not_found(self.table, query))
 
-        validation = yield self._check_api_response_validation(data['id'])
-
-        data.update({'validation': validation})
+        # only do this when it's nfvi not vnf
+        if 'is_onap' not in data.keys() or data['is_onap'] != 'true':
+            validation = yield self._check_api_response_validation(data['id'])
+            data.update({'validation': validation})
 
         self.finish_request(self.format_data(data))
 
@@ -172,7 +173,7 @@ class TestsGURHandler(GenericTestHandler):
                     pass
         # For 2018.01 and 2018.09
         # Need to check dovetail.log for this info
-        elif os.path.exists(log_path):
+        if os.path.exists(log_path):
             with open(log_path) as f:
                 log_content = f.read()
                 warning_keyword = 'Strict API response validation DISABLED'
@@ -180,8 +181,8 @@ class TestsGURHandler(GenericTestHandler):
                     raise gen.Return('API response validation disabled')
                 else:
                     raise gen.Return('API response validation enabled')
-        else:
-            raises.Forbidden('neither results.json nor dovetail.log are found')
+                    
+        raises.Forbidden('neither results.json nor dovetail.log are found')
 
     @swagger.operation(nickname="deleteTestById")
     @gen.coroutine
