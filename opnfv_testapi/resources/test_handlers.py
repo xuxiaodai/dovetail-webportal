@@ -168,11 +168,14 @@ class TestsGURHandler(GenericTestHandler):
                 try:
                     data = json.load(f)
                     if data['validation'] == 'enabled':
-                        raise gen.Return('API response validation enabled')
+                        res = 'API response validation enabled'
                     else:
-                        raise gen.Return('API response validation disabled')
+                        res = 'API response validation disabled'
                 except:
                     pass
+        if res:
+            gen.Return(res)
+
         # For 2018.01 and 2018.09
         # Need to check dovetail.log for this info
         if os.path.exists(log_path):
