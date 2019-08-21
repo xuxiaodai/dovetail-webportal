@@ -9,6 +9,7 @@
 import logging
 import os
 import json
+import pysnooper
 
 from tornado import web
 from tornado import gen
@@ -156,6 +157,7 @@ class TestsGURHandler(GenericTestHandler):
         self.finish_request(self.format_data(data))
 
     @gen.coroutine
+    @pysnooper.snoop('/home/pysnooper.log')
     def _check_api_response_validation(self, test_id):
         results_path = DOVETAIL_RESULTS_PATH.format(test_id)
         log_path = DOVETAIL_LOG_PATH.format(test_id)
