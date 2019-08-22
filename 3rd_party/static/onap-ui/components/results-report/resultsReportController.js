@@ -78,9 +78,24 @@
         }
 
         function gotoResultLog(case_name) {
-            var case_area = case_name.split(".")[0];
             var log_url = "/logs/" + ctrl.testId + "/results/";
-            log_url += case_area + "_logs/" + case_name + ".out";
+            var keepGoing = true;
+            if (ctrl.version == '2019.04') {
+                var case_area = case_name.split(".")[0];
+                log_url += case_area + "_logs/" + case_name + ".out";
+            } else {
+                angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                    if (keepGoing == true) {
+                        if (testcase.name == case_name) {
+                            log_url += testcase.portal_key_file;
+                            keepGoing = false;
+                        }
+                    }
+                });
+                if (keepGoing == true) {
+                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
+                }
+            }
             var is_reachable = false;
 
             $.ajax({
