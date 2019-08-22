@@ -1,0 +1,30 @@
+{
+    "mandatory": {
+        "bottlenecks.stress.ping": {
+            "cases": [
+                "bottlenecks.stress.ping"
+            ],
+            "total": 1
+        },
+        "functest.vping.ssh": {
+            "cases": [
+                "functest.vping.ssh"
+            ],
+            "total": 1
+        },
+        "functest.vping.userdata": {
+            "cases": [
+                "functest.vping.userdata"
+            ],
+            "total": 1
+        }
+    },
+    "optional": {
+        "functest.bgpvpn.router_association": {
+            "cases": [
+                "functest.bgpvpn.router_association"
+            ],
+            "total": 1
+        }
+    }
+}
