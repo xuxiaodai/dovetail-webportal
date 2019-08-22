@@ -100,12 +100,25 @@
                 } else {
                     log_url += case_area+"_logs/"+case_name+".log";
                 }
-            } else {
+            } else if (ctrl.version == '2018.09') {
                 log_url += case_area + "_logs/";
                 if (case_area == "tempest" || case_area == "security") {
                     log_url += case_name + ".html";
                 } else {
                     log_url += case_name + ".log";
+                }
+            } else {
+                var keepGoing = true;
+                angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                    if (keepGoing == true) {
+                        if (testcase.name == case_name) {
+                            log_url += testcase.portal_key_file;
+                            keepGoing = false;
+                        }
+                    }
+                });
+                if (keepGoing == true) {
+                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
                 }
             }
             var is_reachable = false;
