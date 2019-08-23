@@ -114,9 +114,12 @@
                     $http.get(result_url).then(function(result_resp){
                         var keepGoing = true;
                         angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                            console.log(index+': '+testcase.name);
                             if (keepGoing == true) {
                                 if (testcase.name == case_name) {
                                     log_url += testcase.portal_key_file;
+                                    console.log('match case name');
+                                    console.log('log_url is '+log_url);
                                     keepGoing = false;
                                 }
                             }
@@ -133,6 +136,7 @@
             }
             var is_reachable = false;
 
+            console.log('final log_url is '+log_url);
             $.ajax({
                 url: log_url,
                 async: false,
