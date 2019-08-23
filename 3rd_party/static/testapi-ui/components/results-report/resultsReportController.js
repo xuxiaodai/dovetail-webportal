@@ -124,10 +124,10 @@
                         if (keepGoing == true) {
                             alert("Log file could not be found. Please confirm this case has been executed successfully.");
                         }
-                    } function(result_error){
+                    }, function(result_error) {
                         alert('Error when get result record');
                     });
-                } function(test_error){
+                }, function(test_error) {
                     alert('Error when get test record');
                 });
             }
