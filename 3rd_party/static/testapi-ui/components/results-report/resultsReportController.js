@@ -137,17 +137,26 @@
             var is_reachable = false;
 
             console.log('final log_url is '+log_url);
-            $.ajax({
-                url: log_url,
-                async: false,
-                success: function (response) {
-                    is_reachable = true;
-                },
-                error: function (response){
-                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
-                }
-            });
+//            $.ajax({
+//                url: log_url,
+//                async: false,
+//                success: function (response) {
+//                    is_reachable = true;
+//                },
+//                error: function (response){
+//                   alert("Log file could not be found. Please confirm this case has been executed successfully.");
+//                }
+//            });
 
+            $http({
+                method: "GET",
+                url: log_url,
+            }).then(function (response) {
+                is_reachable = true;
+            }).error(function (response) {
+                alert("Log file could not be found. Please confirm this case has been executed successfully.");
+            });
+                
             console.log('final window open log_url is '+log_url);
             if(is_reachable == true){
                 window.open(log_url);
