@@ -108,17 +108,23 @@
                     log_url += case_name + ".log";
                 }
             } else {
-                var keepGoing = true;
-                angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
-                    if (keepGoing == true) {
-                        if (testcase.name == case_name) {
-                            log_url += testcase.portal_key_file;
-                            keepGoing = false;
+                var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
+                $http.get(test_url).then(function(test_resp){
+                    var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
+                    $http.get(result_url).then(function(result_resp){
+                        var keepGoing = true;
+                        angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                            if (keepGoing == true) {
+                                if (testcase.name == case_name) {
+                                    log_url += testcase.portal_key_file;
+                                    keepGoing = false;
+                                }
+                            }
+                        });
+                        if (keepGoing == true) {
+                            alert("Log file could not be found. Please confirm this case has been executed successfully.");
                         }
                     }
-                });
-                if (keepGoing == true) {
-                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
                 }
             }
             var is_reachable = false;
