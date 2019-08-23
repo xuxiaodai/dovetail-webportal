@@ -148,6 +148,7 @@
                 }
             });
 
+            console.log('final window open log_url is '+log_url);
             if(is_reachable == true){
                 window.open(log_url);
             }
