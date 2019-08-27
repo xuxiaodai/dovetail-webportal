@@ -118,7 +118,9 @@
                                 angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
                                     if (keepGoing == true) {
                                         if (testcase.name == case_name) {
+                                            console.log("match test case name "+case_name)
                                             log_url += testcase.portal_key_file;
+                                            console.log("log_url is "+log_url)
                                             keepGoing = false;
                                         }
                                     }
@@ -138,6 +140,7 @@
             }
 
             function openFile(log_url) {
+                console.log("openFile log url is "+log_url)
                 var is_reachable = false;
 
                 var p = new Promise(function(resolve, reject){
@@ -154,6 +157,7 @@
                 });
 
                 if(is_reachable == true){
+                    console.log("Final openFile log url is "+log_url)
                     window.open(log_url);
                 }
                 return p;
