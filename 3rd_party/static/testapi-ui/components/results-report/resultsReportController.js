@@ -90,27 +90,27 @@
         }
 
         function gotoResultLog(case_name) {
-            var log_url = "/logs/"+ctrl.testId+"/results/";
-            function getLogUrl(case_name) {
-                var case_area = case_name.split(".")[1];
-                if (ctrl.version == '2018.01') {
-                    if (case_area == "vping") {
-                        log_url += "functest.log";
-                    } else if (case_area == "ha") {
-                        log_url += "yardstick.log";
+            var getLogUrl = function(case_name) {
+                var p = new Promise(function(resolve, reject){
+                    var log_url = "/logs/"+ctrl.testId+"/results/";
+                    var case_area = case_name.split(".")[1];
+                    if (ctrl.version == '2018.01') {
+                        if (case_area == "vping") {
+                            log_url += "functest.log";
+                        } else if (case_area == "ha") {
+                            log_url += "yardstick.log";
+                        } else {
+                            log_url += case_area+"_logs/"+case_name+".log";
+                        }
+                    } else if (ctrl.version == '2018.09') {
+                        log_url += case_area + "_logs/";
+                        if (case_area == "tempest" || case_area == "security") {
+                            log_url += case_name + ".html";
+                        } else {
+                            log_url += case_name + ".log";
+                        }
                     } else {
-                        log_url += case_area+"_logs/"+case_name+".log";
-                    }
-                } else if (ctrl.version == '2018.09') {
-                    log_url += case_area + "_logs/";
-                    if (case_area == "tempest" || case_area == "security") {
-                        log_url += case_name + ".html";
-                    } else {
-                        log_url += case_name + ".log";
-                    }
-                } else {
-                    var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
-                    var p = new Promise(function(resolve, reject){
+                        var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
                         $http.get(test_url).then(function(test_resp){
                             var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
                             $http.get(result_url).then(function(result_resp){
@@ -118,9 +118,7 @@
                                 angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
                                     if (keepGoing == true) {
                                         if (testcase.name == case_name) {
-                                            console.log("match test case name "+case_name)
                                             log_url += testcase.portal_key_file;
-                                            console.log("log_url is "+log_url)
                                             keepGoing = false;
                                         }
                                     }
@@ -135,37 +133,33 @@
                             alert('Error when get test record');
                         });
                     });
+                    resolve(log_url);
                 }
                 return p;
             }
 
             function openFile(log_url) {
-                console.log("openFile log url is "+log_url)
                 var is_reachable = false;
 
-                var p = new Promise(function(resolve, reject){
-                    $.ajax({
-                        url: log_url,
-                        async: false,
-                        success: function (response) {
-                            is_reachable = true;
-                        },
-                        error: function (response){
-                            alert("Log file could not be found. Please confirm this case has been executed successfully.");
-                        }
-                    });
+                $.ajax({
+                    url: log_url,
+                    async: false,
+                    success: function (response) {
+                        is_reachable = true;
+                    },
+                    error: function (response){
+                        alert("Log file could not be found. Please confirm this case has been executed successfully.");
+                    }
                 });
 
                 if(is_reachable == true){
-                    console.log("Final openFile log url is "+log_url)
                     window.open(log_url);
                 }
-                return p;
             }
 
-            Promise
-            .all([getLogUrl(case_name), openFile(log_url)])
-            .then(function(results){
+            getLogUrl(case_name)
+            .then(function(log_url) {
+                openFile(log_url);
             });
         }
 
