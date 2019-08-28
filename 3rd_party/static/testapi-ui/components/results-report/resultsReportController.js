@@ -136,7 +136,7 @@
                         });
                     }
                     resolve(log_url);
-                }
+                });
                 return p;
             }
 
