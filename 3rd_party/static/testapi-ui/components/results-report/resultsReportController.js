@@ -134,7 +134,7 @@
                         }, function(test_error) {
                             alert('Error when get test record');
                         });
-                    });
+                    }
                     resolve(log_url);
                 }
                 return p;
