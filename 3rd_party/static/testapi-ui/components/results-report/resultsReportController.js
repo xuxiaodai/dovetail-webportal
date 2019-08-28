@@ -118,7 +118,9 @@
                                 angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
                                     if (keepGoing == true) {
                                         if (testcase.name == case_name) {
+                                            console.log("match test case "+case_name)
                                             log_url += testcase.portal_key_file;
+                                            console.log("log_url is "+log_url)
                                             keepGoing = false;
                                         }
                                     }
@@ -141,6 +143,7 @@
             function openFile(log_url) {
                 var is_reachable = false;
 
+                console.log("log_url in openFile beginning is "+log_url)
                 $.ajax({
                     url: log_url,
                     async: false,
@@ -153,12 +156,14 @@
                 });
 
                 if(is_reachable == true){
+                    console.log("log_url in openFile ending is "+log_url)
                     window.open(log_url);
                 }
             }
 
             getLogUrl(case_name)
             .then(function(log_url) {
+                console.log("log_url passed to openFile is "+log_url)
                 openFile(log_url);
             });
         }
