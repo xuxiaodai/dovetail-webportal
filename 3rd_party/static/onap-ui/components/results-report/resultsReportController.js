@@ -78,40 +78,54 @@
         }
 
         function gotoResultLog(case_name) {
+            function openFile(log_url) {
+                var is_reachable = false;
+
+                $.ajax({
+                    url: log_url,
+                    async: false,
+                    success: function (response) {
+                        is_reachable = true;
+                    },
+                    error: function (response) {
+                        alert("Log file could not be found. Please confirm this case has been executed successfully.");
+                    }
+                });
+
+                if (is_reachable == true) {
+                    window.open(log_url);
+                }
+            }
+
             var log_url = "/logs/" + ctrl.testId + "/results/";
-            var keepGoing = true;
             if (ctrl.version == '2019.04') {
                 var case_area = case_name.split(".")[0];
                 log_url += case_area + "_logs/" + case_name + ".out";
+                openFile(log_url);
             } else {
-                angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
+                $http.get(test_url).then(function(test_resp){
+                    var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
+                    $http.get(result_url).then(function(result_resp){
+                        var keepGoing = true;
+                        angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                            if (keepGoing == true) {
+                                if (testcase.name == case_name) {
+                                    log_url += testcase.portal_key_file;
+                                    openFile(log_url);
+                                    keepGoing = false;
+                                }
+                            }
+                        });
                     if (keepGoing == true) {
-                        if (testcase.name == case_name) {
-                            log_url += testcase.portal_key_file;
-                            keepGoing = false;
-                        }
+                        alert("Log file could not be found. Please confirm this case has been executed successfully.");
                     }
+                }, function(result_error) {
+                    alert('Error when get result record');
                 });
-                if (keepGoing == true) {
-                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
-                }
-            }
-            var is_reachable = false;
-
-            $.ajax({
-                url: log_url,
-                async: false,
-                success: function (response) {
-                    is_reachable = true;
-                },
-                error: function (response) {
-                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
-                }
+            }, function(test_error) {
+                alert('Error when get test record');
             });
-
-            if (is_reachable == true) {
-                window.open(log_url);
-            }
         }
 
         $scope.$watch('load_finish', function() {
