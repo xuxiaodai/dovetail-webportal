@@ -161,6 +161,8 @@ class TestsGURHandler(GenericTestHandler):
     def _check_api_response_validation(self, test_id):
         results_path = DOVETAIL_RESULTS_PATH.format(test_id)
         log_path = DOVETAIL_LOG_PATH.format(test_id)
+        res = None
+
         # For release after 2018.09
         # Dovetail adds 'validation' directly into results.json
         if os.path.exists(results_path):
