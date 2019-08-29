@@ -93,6 +93,7 @@
             function openFile(log_url) {
                 var is_reachable = false;
 
+                console.log("log_url passed to openFile is "+log_url);
                 $.ajax({
                     url: log_url,
                     async: false,
@@ -105,6 +106,7 @@
                 });
 
                 if(is_reachable == true){
+                    console.log("log_url finally open is "+log_url);
                     window.open(log_url);
                 }
             }
@@ -138,6 +140,7 @@
                             if (keepGoing == true) {
                                 if (testcase.name == case_name) {
                                     log_url += testcase.portal_key_file;
+                                    console.log("match case name, log_url is "+log_url);
                                     openFile(log_url);
                                     keepGoing = false;
                                 }
