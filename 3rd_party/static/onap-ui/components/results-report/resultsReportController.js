@@ -103,7 +103,7 @@
                 log_url += case_area + "_logs/" + case_name + ".out";
                 openFile(log_url);
             } else {
-                var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
+                var test_url = testapiApiUrl + '/onap/tests/' + ctrl.innerId;
                 $http.get(test_url).then(function(test_resp){
                     var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
                     $http.get(result_url).then(function(result_resp){
