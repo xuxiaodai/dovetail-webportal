@@ -90,60 +90,9 @@
         }
 
         function gotoResultLog(case_name) {
-            var getLogUrl = function(case_name) {
-                var p = new Promise(function(resolve, reject){
-                    var log_url = "/logs/"+ctrl.testId+"/results/";
-                    var case_area = case_name.split(".")[1];
-                    if (ctrl.version == '2018.01') {
-                        if (case_area == "vping") {
-                            log_url += "functest.log";
-                        } else if (case_area == "ha") {
-                            log_url += "yardstick.log";
-                        } else {
-                            log_url += case_area+"_logs/"+case_name+".log";
-                        }
-                    } else if (ctrl.version == '2018.09') {
-                        log_url += case_area + "_logs/";
-                        if (case_area == "tempest" || case_area == "security") {
-                            log_url += case_name + ".html";
-                        } else {
-                            log_url += case_name + ".log";
-                        }
-                    } else {
-                        var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
-                        $http.get(test_url).then(function(test_resp){
-                            var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
-                            $http.get(result_url).then(function(result_resp){
-                                var keepGoing = true;
-                                angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
-                                    if (keepGoing == true) {
-                                        if (testcase.name == case_name) {
-                                            console.log("match test case "+case_name)
-                                            log_url += testcase.portal_key_file;
-                                            console.log("log_url is "+log_url)
-                                            keepGoing = false;
-                                        }
-                                    }
-                                });
-                                if (keepGoing == true) {
-                                    alert("Log file could not be found. Please confirm this case has been executed successfully.");
-                                }
-                            }, function(result_error) {
-                                alert('Error when get result record');
-                            });
-                        }, function(test_error) {
-                            alert('Error when get test record');
-                        });
-                    }
-                    resolve(log_url);
-                });
-                return p;
-            }
-
             function openFile(log_url) {
                 var is_reachable = false;
 
-                console.log("log_url in openFile beginning is "+log_url)
                 $.ajax({
                     url: log_url,
                     async: false,
@@ -156,16 +105,54 @@
                 });
 
                 if(is_reachable == true){
-                    console.log("log_url in openFile ending is "+log_url)
                     window.open(log_url);
                 }
             }
 
-            getLogUrl(case_name)
-            .then(function(log_url) {
-                console.log("log_url passed to openFile is "+log_url)
+            var log_url = "/logs/"+ctrl.testId+"/results/";
+            var case_area = case_name.split(".")[1];
+            if (ctrl.version == '2018.01') {
+                if (case_area == "vping") {
+                    log_url += "functest.log";
+                } else if (case_area == "ha") {
+                    log_url += "yardstick.log";
+                } else {
+                    log_url += case_area+"_logs/"+case_name+".log";
+                }
                 openFile(log_url);
-            });
+            } else if (ctrl.version == '2018.09') {
+                log_url += case_area + "_logs/";
+                if (case_area == "tempest" || case_area == "security") {
+                    log_url += case_name + ".html";
+                } else {
+                    log_url += case_name + ".log";
+                }
+                openFile(log_url);
+            } else {
+                var test_url = testapiApiUrl + '/tests/' + ctrl.innerId;
+                $http.get(test_url).then(function(test_resp){
+                    var result_url = testapiApiUrl + '/results/' + test_resp.data.results[0];
+                    $http.get(result_url).then(function(result_resp){
+                        var keepGoing = true;
+                        angular.forEach(result_resp.data.testcases_list, function(testcase, index) {
+                            if (keepGoing == true) {
+                                if (testcase.name == case_name) {
+                                    log_url += testcase.portal_key_file;
+                                    openFile(log_url);
+                                    keepGoing = false;
+                                }
+                            }
+                        });
+                        if (keepGoing == true) {
+                            alert("Log file could not be found. Please confirm this case has been executed successfully.");
+                        }
+                    }, function(result_error) {
+                        alert('Error when get result record');
+                    });
+                }, function(test_error) {
+                    alert('Error when get test record');
+                });
+            }
         }
 
         $scope.$watch('load_finish', function(){
